@@ -64,19 +64,12 @@ Route::get('/callback2', function (Request $request) {
     return json_decode((string) $response->getBody(), true);
 });
 
-Route::get('/get-token', function (Request $request) {
 
-    $http = new GuzzleHttp\Client([
-        'curl' => array( CURLOPT_SSL_VERIFYPEER => false, CURLOPT_SSL_VERIFYHOST => false ),
-        'verify'=> false
-    ]);
+Route::get('/guzzle/example/get', function (Request $request) {
 
+    $client = new GuzzleHttp\Client(['base_uri' => 'https://jsonplaceholder.typicode.com/']);
+    $response = $client->request('GET', 'posts', ['verify' => false]);
 
-    $response = $http->get('http://localhost:8000/oauth/clients');
-    echo "<pre>";
-    print_r($response);
-    echo "</pre>";
-    die();
     return json_decode((string) $response->getBody(), true);
 });
 
