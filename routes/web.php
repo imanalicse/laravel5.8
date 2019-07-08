@@ -34,24 +34,13 @@ Route::get('/redirect', function () {
     return redirect('http://localhost:8000/oauth/authorize?'.$query);
 });
 
-Route::get('/callback', function () {
-    echo "<pre>";
-    print_r($_REQUEST);
-    echo "</pre>";
-});
 
 //Converting Authorization Codes To Access Tokens
 Route::get('/callback2', function (Request $request) {
 
-    $http = new GuzzleHttp\Client(
-        [
-            'verify' => false,
-            'defaults' => [
-                'exceptions' => false
-            ]
-        ]);
+    $client = new GuzzleHttp\Client(['base_uri' => 'http://localhost:8000/']);
 
-    $response = $http->post('http://localhost:8000/oauth/token', [
+    $response = $client->request('POST','oauth/token', [
         'form_params' => [
             'grant_type' => 'authorization_code',
             'client_id' => 3,
@@ -59,7 +48,7 @@ Route::get('/callback2', function (Request $request) {
             'redirect_uri' => 'http://localhost:8000/callback',
             'code' => $request->code,
         ],
-    ]);
+    ], ['verify' => false]);
 
     return json_decode((string) $response->getBody(), true);
 });
@@ -69,6 +58,10 @@ Route::get('/guzzle/example/get', function (Request $request) {
 
     $client = new GuzzleHttp\Client(['base_uri' => 'https://jsonplaceholder.typicode.com/']);
     $response = $client->request('GET', 'posts', ['verify' => false]);
+
+
+//    $client = new GuzzleHttp\Client(['base_uri' => 'http://localhost:8000/']);
+//    $response = $client->request('GET', 'oauth/clients', ['verify' => false]);
 
     return json_decode((string) $response->getBody(), true);
 });
